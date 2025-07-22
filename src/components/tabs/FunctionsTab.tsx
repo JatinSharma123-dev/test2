@@ -39,6 +39,8 @@ const FunctionsTab: React.FC = () => {
       host: '',
       path: '',
       headers: {},
+      queryParams: {},
+      pathParams: {},
       headerParams: {},
       requestBody: null,
       requestBodyPath: {},
@@ -58,7 +60,7 @@ const FunctionsTab: React.FC = () => {
     setError(null);
     try {
       const response = await axios.get('/api/v1/config/functions/all');
-      const functions = response.data.data || [];
+      const functions = response.data || []; // API returns array directly
       
       // Transform API response to match our interface
       const transformedFunctions = functions.map((func: any) => ({
@@ -70,6 +72,8 @@ const FunctionsTab: React.FC = () => {
           host: func.config.host || '',
           path: func.config.path || '',
           headers: func.config.headers || {},
+          queryParams: func.config.queryParams || {},
+          pathParams: func.config.pathParams || {},
           headerParams: func.config.headerParams || {},
           requestBody: func.config.requestBody,
           requestBodyPath: func.config.requestBodyPath || {},
@@ -167,6 +171,8 @@ const FunctionsTab: React.FC = () => {
         host: func.config.host || '',
         path: func.config.path || '',
         headers: func.config.headers || {},
+        queryParams: func.config.queryParams || {},
+        pathParams: func.config.pathParams || {},
         headerParams: func.config.headerParams || {},
         requestBody: func.config.requestBody || null,
         requestBodyPath: func.config.requestBodyPath || {},
@@ -422,6 +428,70 @@ const FunctionsTab: React.FC = () => {
                   />
                 </div>
               )}
+
+              {/* Request Body Path */}
+              {(formData.config.httpMethod === 'POST' || formData.config.httpMethod === 'PUT') && (
+                <div className="mt-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-medium text-gray-900">Request Body Path Mappings</h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const key = prompt('Enter request body path key:');
+                        const value = prompt('Enter JSON path (e.g., $.fieldName):');
+                        if (key && value) {
+                          setFormData(prev => ({
+                            ...prev,
+                            config: {
+                              ...prev.config,
+                              requestBodyPath: { ...prev.config.requestBodyPath, [key]: value }
+                            }
+                          }));
+                        }
+                      }}
+                      className="text-blue-600 hover:text-blue-800 text-sm"
+                    >
+                      + Add Path Mapping
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    {Object.entries(formData.config.requestBodyPath || {}).map(([key, value]) => (
+                      <div key={key} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={key}
+                          readOnly
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                          placeholder="Parameter name"
+                        />
+                        <input
+                          type="text"
+                          value={value}
+                          readOnly
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                          placeholder="JSON path"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData(prev => {
+                              const newRequestBodyPath = { ...prev.config.requestBodyPath };
+                              delete newRequestBodyPath[key];
+                              return {
+                                ...prev,
+                                config: { ...prev.config, requestBodyPath: newRequestBodyPath }
+                              };
+                            });
+                          }}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Headers */}
@@ -630,9 +700,31 @@ const FunctionsTab: React.FC = () => {
                         <div><span className="font-medium">Host:</span> {fn.config.host}</div>
                         <div><span className="font-medium">Path:</span> {fn.config.path}</div>
                       </div>
+                      {fn.config.requestBody && (
+                        <div className="mt-2">
+                          <span className="font-medium">Request Body:</span>
+                          <pre className="text-xs bg-gray-100 p-2 rounded mt-1 overflow-x-auto">
+                            {JSON.stringify(JSON.parse(fn.config.requestBody), null, 2)}
+                          </pre>
+                        </div>
+                      )}
+                      {Object.keys(fn.config.requestBodyPath || {}).length > 0 && (
+                        <div className="mt-2">
+                          <span className="font-medium">Request Body Mappings:</span>
+                          <div className="text-xs mt-1">
+                            {Object.entries(fn.config.requestBodyPath || {}).map(([key, value]) => (
+                              <div key={key} className="flex gap-2">
+                                <span className="font-medium">{key}:</span>
+                                <span>{value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-4 text-sm text-gray-500">
                       <span>Headers: {Object.keys(fn.config.headers || {}).length}</span>
+                      <span>Header Params: {Object.keys(fn.config.headerParams || {}).length}</span>
                       <span>Inputs: {Object.keys(fn.inputProperties || {}).length}</span>
                       <span>Outputs: {Object.keys(fn.outputProperties || {}).length}</span>
                       <span>Timeout: {fn.config.timeoutMs}ms</span>
