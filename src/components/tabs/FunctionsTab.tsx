@@ -39,9 +39,9 @@ const FunctionsTab: React.FC = () => {
       host: '',
       path: '',
       headers: {},
+      headerParams: {},
       queryParams: {},
       pathParams: {},
-      headerParams: {},
       requestBody: null,
       requestBodyPath: {},
       timeoutMs: 30000
@@ -72,10 +72,10 @@ const FunctionsTab: React.FC = () => {
           host: func.config.host || '',
           path: func.config.path || '',
           headers: func.config.headers || {},
+          headerParams: func.config.headerParams || {},
           queryParams: func.config.queryParams || {},
           pathParams: func.config.pathParams || {},
-          headerParams: func.config.headerParams || {},
-          requestBody: func.config.requestBody || '',
+          requestBody: func.config.requestBody || null,
           requestBodyPath: func.config.requestBodyPath || {},
           timeoutMs: func.config.timeoutMs || 30000
         },
@@ -171,9 +171,9 @@ const FunctionsTab: React.FC = () => {
         host: func.config.host || '',
         path: func.config.path || '',
         headers: func.config.headers || {},
+        headerParams: func.config.headerParams || {},
         queryParams: func.config.queryParams || {},
         pathParams: func.config.pathParams || {},
-        headerParams: func.config.headerParams || {},
         requestBody: func.config.requestBody || '',
         requestBodyPath: func.config.requestBodyPath || {},
         timeoutMs: func.config.timeoutMs || 30000
@@ -427,15 +427,15 @@ const FunctionsTab: React.FC = () => {
                     placeholder='{"key": "value"}
 Example: {"name":"NAME","dateOfBirth":"DOB","panNumber":"PAN"}'
                   />
-                  {formData.config.requestBody && (
+                  {formData.config.requestBody && formData.config.requestBody.trim() && (
                     <div className="mt-2">
                       <span className="text-xs text-gray-600">Preview:</span>
                       <pre className="text-xs bg-gray-50 p-2 rounded mt-1 overflow-x-auto border">
                         {(() => {
                           try {
-                            return JSON.stringify(JSON.parse(formData.config.requestBody), null, 2);
+                            return JSON.stringify(JSON.parse(formData.config.requestBody!), null, 2);
                           } catch (e) {
-                            return formData.config.requestBody;
+                            return formData.config.requestBody!;
                           }
                         })()}
                       </pre>
@@ -715,16 +715,15 @@ Example: {"name":"NAME","dateOfBirth":"DOB","panNumber":"PAN"}'
                         <div><span className="font-medium">Host:</span> {fn.config.host}</div>
                         <div><span className="font-medium">Path:</span> {fn.config.path}</div>
                       </div>
-                      {fn.config.requestBody && (
+                      {fn.config.requestBody && fn.config.requestBody.trim() && (
                         <div className="mt-2">
                           <span className="font-medium">Request Body:</span>
                           <pre className="text-xs bg-gray-100 p-2 rounded mt-1 overflow-x-auto whitespace-pre-wrap">
                             {(() => {
                               try {
-                                return JSON.stringify(JSON.parse(fn.config.requestBody), null, 2);
+                                return JSON.stringify(JSON.parse(fn.config.requestBody!), null, 2);
                               } catch (e) {
-                                // If it's not valid JSON, display as-is
-                                return fn.config.requestBody;
+                                return fn.config.requestBody!;
                               }
                             })()}
                           </pre>
@@ -743,10 +742,38 @@ Example: {"name":"NAME","dateOfBirth":"DOB","panNumber":"PAN"}'
                           </div>
                         </div>
                       )}
+                      {Object.keys(fn.config.queryParams || {}).length > 0 && (
+                        <div className="mt-2">
+                          <span className="font-medium">Query Parameters:</span>
+                          <div className="text-xs mt-1">
+                            {Object.entries(fn.config.queryParams || {}).map(([key, value]) => (
+                              <div key={key} className="flex gap-2">
+                                <span className="font-medium">{key}:</span>
+                                <span>{value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {Object.keys(fn.config.pathParams || {}).length > 0 && (
+                        <div className="mt-2">
+                          <span className="font-medium">Path Parameters:</span>
+                          <div className="text-xs mt-1">
+                            {Object.entries(fn.config.pathParams || {}).map(([key, value]) => (
+                              <div key={key} className="flex gap-2">
+                                <span className="font-medium">{key}:</span>
+                                <span>{value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-4 text-sm text-gray-500">
                       <span>Headers: {Object.keys(fn.config.headers || {}).length}</span>
                       <span>Header Params: {Object.keys(fn.config.headerParams || {}).length}</span>
+                      <span>Query Params: {Object.keys(fn.config.queryParams || {}).length}</span>
+                      <span>Path Params: {Object.keys(fn.config.pathParams || {}).length}</span>
                       <span>Inputs: {Object.keys(fn.inputProperties || {}).length}</span>
                       <span>Outputs: {Object.keys(fn.outputProperties || {}).length}</span>
                       <span>Timeout: {fn.config.timeoutMs}ms</span>
