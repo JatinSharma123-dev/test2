@@ -550,7 +550,7 @@ const PreviewTab: React.FC = () => {
                           </span>
                         </div>
                         <div className="text-xs text-gray-600 mb-2">
-                          <strong>{func!.config.method}</strong> {func!.config.host}{func!.config.path}
+                          <strong>{func!.config.httpMethod}</strong> {func!.config.host}{func!.config.path}
                         </div>
                         {mapping?.condition && mapping.condition.trim() && (
                           <div className="text-xs text-gray-600 mb-2">
@@ -558,26 +558,26 @@ const PreviewTab: React.FC = () => {
                           </div>
                         )}
                         <div className="flex gap-4 text-xs text-gray-500 mb-2">
-                          <span>Inputs: {Object.keys(func!.input_properties).length}</span>
-                          <span>Outputs: {Object.keys(func!.output_properties).length}</span>
+                          <span>Inputs: {Object.keys(func!.inputProperties).length}</span>
+                          <span>Outputs: {Object.keys(func!.outputProperties).length}</span>
                         </div>
                         {/* Input Properties */}
-                        {Object.keys(func!.input_properties).length > 0 && (
+                        {Object.keys(func!.inputProperties).length > 0 && (
                           <div className="mb-2">
                             <div className="font-semibold text-xs text-gray-700">Input Properties:</div>
                             <ul className="ml-4 list-disc text-xs">
-                              {Object.entries(func!.input_properties).map(([key, type]) => (
+                              {Object.entries(func!.inputProperties).map(([key, type]) => (
                                 <li key={key}><span className="font-medium">{key}</span>: {type}</li>
                               ))}
                             </ul>
                           </div>
                         )}
                         {/* Output Properties */}
-                        {Object.keys(func!.output_properties).length > 0 && (
+                        {Object.keys(func!.outputProperties).length > 0 && (
                           <div className="mb-2">
                             <div className="font-semibold text-xs text-gray-700">Output Properties:</div>
                             <ul className="ml-4 list-disc text-xs">
-                              {Object.entries(func!.output_properties).map(([key, type]) => (
+                              {Object.entries(func!.outputProperties).map(([key, type]) => (
                                 <li key={key}><span className="font-medium">{key}</span>: {type}</li>
                               ))}
                             </ul>

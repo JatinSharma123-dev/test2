@@ -114,10 +114,7 @@ export const JourneyProvider: React.FC<JourneyProviderProps> = ({ children, init
   };
 
   const addFunction = (func: Omit<Function, 'id'>) => {
-    const newFunction: Function = {
-      ...func,
-      id: Date.now().toString()
-    };
+    const newFunction: Function = func;
     setJourney(prev => ({
       ...prev,
       functions: [...prev.functions, newFunction],
@@ -128,7 +125,7 @@ export const JourneyProvider: React.FC<JourneyProviderProps> = ({ children, init
   const updateFunction = (id: string, func: Partial<Function>) => {
     setJourney(prev => ({
       ...prev,
-      functions: prev.functions.map(f => f.id === id ? { ...f, ...func } : f),
+      functions: prev.functions.map(f => f.referenceId === id ? { ...f, ...func } : f),
       updatedAt: new Date()
     }));
   };
@@ -136,7 +133,7 @@ export const JourneyProvider: React.FC<JourneyProviderProps> = ({ children, init
   const deleteFunction = (id: string) => {
     setJourney(prev => ({
       ...prev,
-      functions: prev.functions.filter(f => f.id !== id),
+      functions: prev.functions.filter(f => f.referenceId !== id),
       mappings: prev.mappings.filter(m => m.functionId !== id),
       updatedAt: new Date()
     }));

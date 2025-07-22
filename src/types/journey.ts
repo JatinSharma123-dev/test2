@@ -20,25 +20,20 @@ export interface Function {
   name: string;
   type: string;
   config: {
+    httpMethod: string;
     host: string;
     path: string;
-    method: string;
-    header_params: { [key: string]: string };
-    headers: Array<{
-      key: string;
-      type: 'constant' | 'property';
-      value: string;
-    }>;
-    requestBody?: Array<{
-      id: string;
-      apiField: string;
-      property: string;
-    }>;
+    headers: { [key: string]: string };
+    headerParams: { [key: string]: string };
+    requestBody?: string | null;
     requestBodyPath?: { [key: string]: string };
+    timeoutMs: number;
     [key: string]: any;
   };
   inputProperties: { [key: string]: string };
   outputProperties: { [key: string]: string };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface NodeFunctionMapping {

@@ -53,10 +53,10 @@ const NodeFunctionMappingTab: React.FC = () => {
   useEffect(() => {
     if (!formData.functionId) return;
     if (editingMapping) return; // Don't auto-generate if editing
-    const selectedFunction = journey.functions.find(f => f.id === formData.functionId);
+    const selectedFunction = journey.functions.find(f => f.referenceId === formData.functionId);
     if (!selectedFunction) return;
-    const inputProps = selectedFunction.input_properties || {};
-    const outputProps = selectedFunction.output_properties || {};
+    const inputProps = selectedFunction.inputProperties || {};
+    const outputProps = selectedFunction.outputProperties || {};
     const mappings: Array<any> = [];
     Object.entries(inputProps).forEach(([key, type]) => {
       mappings.push({
@@ -150,7 +150,7 @@ const NodeFunctionMappingTab: React.FC = () => {
   };
 
   const getFunctionName = (functionId: string) => {
-    const func = journey.functions.find(f => f.id === functionId);
+    const func = journey.functions.find(f => f.referenceId === functionId);
     return func ? func.name : 'Unknown Function';
   };
 
@@ -216,7 +216,7 @@ const NodeFunctionMappingTab: React.FC = () => {
                 >
                   <option value="">Select a node...</option>
                   {journey.nodes.map((node) => (
-                    <option key={node.id} value={node.id}>
+                    <option key={func.referenceId} value={func.referenceId}>
                       {node.name} ({node.type})
                     </option>
                   ))}
