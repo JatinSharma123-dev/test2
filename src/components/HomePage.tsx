@@ -38,7 +38,7 @@ const HomePage: React.FC<HomePageProps> = ({ onEditJourney, onPreviewJourney, on
         console.log(journeysFromApi);
   
         // Optionally: map/transform journeysFromApi to your Journey type if needed
-        setJourneys(journeysFromApi);
+        setJourneys(Array.isArray(journeysFromApi) ? journeysFromApi : []);
       } catch (error) {
         console.error('Error fetching journeys:', error);
         setJourneys([]);
