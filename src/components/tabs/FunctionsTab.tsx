@@ -75,7 +75,7 @@ const FunctionsTab: React.FC = () => {
           queryParams: func.config.queryParams || {},
           pathParams: func.config.pathParams || {},
           headerParams: func.config.headerParams || {},
-          requestBody: func.config.requestBody,
+          requestBody: func.config.requestBody || '',
           requestBodyPath: func.config.requestBodyPath || {},
           timeoutMs: func.config.timeoutMs || 30000
         },
@@ -115,7 +115,7 @@ const FunctionsTab: React.FC = () => {
         path: '',
         headers: {},
         headerParams: {},
-        requestBody: null,
+        requestBody: '',
         requestBodyPath: {},
         timeoutMs: 30000
       },
@@ -174,7 +174,7 @@ const FunctionsTab: React.FC = () => {
         queryParams: func.config.queryParams || {},
         pathParams: func.config.pathParams || {},
         headerParams: func.config.headerParams || {},
-        requestBody: func.config.requestBody || null,
+        requestBody: func.config.requestBody || '',
         requestBodyPath: func.config.requestBodyPath || {},
         timeoutMs: func.config.timeoutMs || 30000
       },
@@ -424,8 +424,23 @@ const FunctionsTab: React.FC = () => {
                     onChange={(e) => updateConfig('requestBody', e.target.value || null)}
                     rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder='{"key": "value"}'
+                    placeholder='{"key": "value"}
+Example: {"name":"NAME","dateOfBirth":"DOB","panNumber":"PAN"}'
                   />
+                  {formData.config.requestBody && (
+                    <div className="mt-2">
+                      <span className="text-xs text-gray-600">Preview:</span>
+                      <pre className="text-xs bg-gray-50 p-2 rounded mt-1 overflow-x-auto border">
+                        {(() => {
+                          try {
+                            return JSON.stringify(JSON.parse(formData.config.requestBody), null, 2);
+                          } catch (e) {
+                            return formData.config.requestBody;
+                          }
+                        })()}
+                      </pre>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -703,8 +718,15 @@ const FunctionsTab: React.FC = () => {
                       {fn.config.requestBody && (
                         <div className="mt-2">
                           <span className="font-medium">Request Body:</span>
-                          <pre className="text-xs bg-gray-100 p-2 rounded mt-1 overflow-x-auto">
-                            {JSON.stringify(JSON.parse(fn.config.requestBody), null, 2)}
+                          <pre className="text-xs bg-gray-100 p-2 rounded mt-1 overflow-x-auto whitespace-pre-wrap">
+                            {(() => {
+                              try {
+                                return JSON.stringify(JSON.parse(fn.config.requestBody), null, 2);
+                              } catch (e) {
+                                // If it's not valid JSON, display as-is
+                                return fn.config.requestBody;
+                              }
+                            })()}
                           </pre>
                         </div>
                       )}
